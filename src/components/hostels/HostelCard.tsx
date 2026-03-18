@@ -41,13 +41,6 @@ export function HostelCard({ hostel }: HostelCardProps) {
                     <span className="text-sm font-normal text-muted-foreground">/month</span>
                 </p>
              </div>
-             {hostel.distance !== undefined && hostel.distance !== Infinity && (
-                <div className="absolute bottom-3 left-3">
-                    <Badge variant="default" className="bg-primary/90 text-primary-foreground backdrop-blur-sm flex items-center gap-1 shadow-lg">
-                        <Navigation className="h-3 w-3" /> {hostel.distance.toFixed(1)} km away
-                    </Badge>
-                </div>
-             )}
           </div>
           <div className="p-4 pb-2">
              <CardTitle className="text-xl font-bold font-headline group-hover:text-primary transition-colors">{hostel.name}</CardTitle>
@@ -56,6 +49,12 @@ export function HostelCard({ hostel }: HostelCardProps) {
                     <MapPin className="mr-2 h-4 w-4 flex-shrink-0" />
                     <span>{hostel.location}</span>
                 </div>
+                {hostel.distance !== undefined && hostel.distance !== Infinity && (
+                    <div className="flex items-center font-semibold text-primary" title="Distance from you">
+                        <MapPin className="mr-1.5 h-4 w-4" />
+                        <span>{hostel.distance.toFixed(1)} km away</span>
+                    </div>
+                )}
              </div>
           </div>
         </CardHeader>
