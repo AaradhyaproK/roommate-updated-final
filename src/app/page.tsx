@@ -14,15 +14,28 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useMemo } from 'react';
+import { useGeolocation, getDistanceFromLatLonInKm } from '@/lib/location';
 
 export default function HomePage() {
   const { data: allHostels, loading } = useCollection<Hostel>('hostels', []);
+  const { location: userLocation } = useGeolocation();
 
   const featuredHostels = useMemo(() => {
     if (!allHostels) return [];
-    // Filter out hidden and non-accepting hostels, then slice
-    return allHostels.filter(hostel => !hostel.isHidden && hostel.isAcceptingStudents !== false).slice(0, 3);
-  }, [allHostels]);
+    
+    const filtered = allHostels.filter(hostel => !hostel.isHidden && hostel.isAcceptingStudents !== false);
+
+    if (userLocation) {
+        return filtered
+            .map(hostel => ({
+                ...hostel,
+                distance: (hostel.latitude != null && hostel.longitude != null) ? getDistanceFromLatLonInKm(userLocation.latitude, userLocation.longitude, hostel.latitude, hostel.longitude) : Infinity,
+            }))
+            .sort((a, b) => a.distance - b.distance)
+            .slice(0, 3);
+    }
+    return filtered.slice(0, 3);
+  }, [allHostels, userLocation]);
 
   const whyChooseUsFeatures = [
     {

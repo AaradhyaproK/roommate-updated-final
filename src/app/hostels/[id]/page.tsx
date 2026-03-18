@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useGeolocation, getDistanceFromLatLonInKm } from '@/lib/location';
 
 
 function LoadingSkeleton() {
@@ -60,7 +61,15 @@ export default function HostelDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { data: hostel, loading } = useDoc<Hostel>(`hostels/${params.id}`);
+  const { location: userLocation } = useGeolocation();
   const [selectedImg, setSelectedImg] = React.useState<string | null>(null);
+
+  const distance = React.useMemo(() => {
+    if (userLocation && hostel?.latitude != null && hostel?.longitude != null) {
+        return getDistanceFromLatLonInKm(userLocation.latitude, userLocation.longitude, hostel.latitude, hostel.longitude);
+    }
+    return null;
+  }, [userLocation, hostel]);
 
   if (loading) {
     return <LoadingSkeleton />;
@@ -112,6 +121,12 @@ export default function HostelDetailPage() {
                     </div>
                 )}
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2 mt-2">
+                   {distance !== null && (
+                        <div className="flex items-center font-semibold text-primary" title="Distance from you">
+                            <MapPin className="mr-1.5 h-4 w-4" />
+                            <span>{distance.toFixed(1)} km away</span>
+                        </div>
+                    )}
                    <div className="flex items-center font-semibold" title="Price">
                         <IndianRupee className="mr-1.5 h-4 w-4 text-primary" />
                         <span>{hostel.price.toLocaleString('en-IN')} / month</span>

@@ -55,6 +55,7 @@ export interface Hostel {
   checkOutTime: string;
   isHidden?: boolean;
   isAcceptingStudents?: boolean;
+  distance?: number;
 }
 
 export interface QuotationItem {

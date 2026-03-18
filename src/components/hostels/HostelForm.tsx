@@ -39,6 +39,8 @@ const hostelFormSchema = z.object({
   location: z.string().min(1, {
     message: 'Please select a city.',
   }),
+  latitude: z.coerce.number().min(-90, "Invalid latitude").max(90, "Invalid latitude").optional(),
+  longitude: z.coerce.number().min(-180, "Invalid longitude").max(180, "Invalid longitude").optional(),
   landmark: z.string().optional(),
   googleMapUrl: z.string().url({ message: 'Please enter a valid Google Maps URL.' }).optional().or(z.literal('')),
   description: z.string().min(20, {
@@ -84,6 +86,8 @@ export function HostelForm({ hostel }: HostelFormProps) {
   const defaultValues: Partial<HostelFormValues> = {
     name: hostel?.name || '',
     location: hostel?.location || '',
+    latitude: hostel?.latitude,
+    longitude: hostel?.longitude,
     landmark: hostel?.landmark || '',
     description: hostel?.description || '',
     amenities: hostel?.amenities.join(', ') || 'WiFi, Kitchen, ',
@@ -321,6 +325,35 @@ export function HostelForm({ hostel }: HostelFormProps) {
             </FormItem>
           )}
         />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+            <FormField
+                control={form.control}
+                name="latitude"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Latitude (Optional)</FormLabel>
+                    <FormControl>
+                        <Input type="number" placeholder="e.g., 19.9975" {...field} value={field.value ?? ''} />
+                    </FormControl>
+                    <FormDescription>You can get this from Google Maps.</FormDescription>
+                    <FormMessage />
+                    </FormItem>
+                )}
+            />
+             <FormField
+                control={form.control}
+                name="longitude"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Longitude (Optional)</FormLabel>
+                    <FormControl>
+                        <Input type="number" placeholder="e.g., 73.7898" {...field} value={field.value ?? ''} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+            />
+        </div>
         <FormField
           control={form.control}
           name="googleMapUrl"
